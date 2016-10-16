@@ -1,5 +1,5 @@
 -module(ntlm_httpc).
--export([request/3, request_basic/3, request_ntlm/3]).
+-export([request/3]).
 
 request(Method, Request, Credentials) ->
     Request2 = request_add_header(Request,
@@ -7,6 +7,7 @@ request(Method, Request, Credentials) ->
     case httpc:request(Method, Request2, [], [{body_format, binary}]) of
         {ok, {{_Ver, 401, _Phrase}, Headers, _Body}} = Response ->
             case www_authenticate(Headers) of
+                ["Basic"|_] -> request_basic(Method, Request2, Credentials);
                 ["NTLM"] -> request_ntlm(Method, Request2, Credentials);
                 undefined -> Response
             end;

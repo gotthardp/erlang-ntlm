@@ -1,5 +1,5 @@
 -module(ntlm_auth).
--export([negotiate/0, authenticate/5, test/0]).
+-export([negotiate/0, authenticate/5]).
 
 -define(NEGOTIATE_HEADER, 40). % length of the fixed-size fields before payload
 -define(AUTHENTICATE_HEADER, 72).
