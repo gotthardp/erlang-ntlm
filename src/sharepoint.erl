@@ -1,5 +1,5 @@
 -module(sharepoint).
--export([get_form_digest/2, get_list_attribute/4, add_list_item/6]).
+-export([get_form_digest/2, get_list_attribute/4, add_list_item/6, update_list_item/7]).
 
 get_form_digest(Site, Credentials) ->
     case ntlm_httpc:request(post,
@@ -30,7 +30,23 @@ add_list_item(Site, List, ListItemEntityType, ItemData, FormDigest, Credentials)
                 [{"Accept", "application/json; odata=verbose"},
                 {"X-RequestDigest", FormDigest}],
                 ["application/json; odata=verbose"], Body}, Credentials) of
-        {ok, {{_, 201, _}, _, _}} ->
+        {ok, {{_, 201, _}, _, Body2}} ->
+            % return identifier of the newly created list item
+            get_body_attribute(Body2, 'Id');
+        Else ->
+            {error, Else}
+    end.
+
+update_list_item(Site, List, ItemId, ListItemEntityType, ItemData, FormDigest, Credentials) ->
+    Body = jsx:encode([{'__metadata',[{'type', ListItemEntityType}]} | ItemData]),
+    case ntlm_httpc:request(post,
+            {Site ++ "/_api/web/lists/GetByTitle('" ++ List ++ "')/items(" ++ integer_to_list(ItemId) ++ ")",
+                [{"Accept", "application/json; odata=verbose"},
+                {"X-RequestDigest", FormDigest},
+                {"IF-MATCH", "*"},
+                {"X-HTTP-Method", "MERGE"}],
+                ["application/json; odata=verbose"], Body}, Credentials) of
+        {ok, {{_, 204, _}, _, _}} ->
             ok;
         Else ->
             {error, Else}
