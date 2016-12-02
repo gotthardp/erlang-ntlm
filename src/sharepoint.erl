@@ -15,7 +15,7 @@ get_form_digest(Site, Credentials) ->
 
 get_list_attribute(Site, List, Attribute, Credentials) ->
     case ntlm_httpc:request(get,
-            {Site ++ "/_api/web/lists/GetByTitle('" ++ List ++ "')",
+            {Site ++ "/_api/web/lists/GetByTitle('" ++ encode_list(List) ++ "')",
                 [{"Accept", "application/json; odata=verbose"}]}, Credentials) of
         {ok, {{_, 200, _}, _, Body}} ->
             get_body_attribute(Body, Attribute);
@@ -26,7 +26,7 @@ get_list_attribute(Site, List, Attribute, Credentials) ->
 add_list_item(Site, List, ListItemEntityType, ItemData, FormDigest, Credentials) ->
     Body = jsx:encode([{'__metadata',[{'type', ListItemEntityType}]} | ItemData]),
     case ntlm_httpc:request(post,
-            {Site ++ "/_api/web/lists/GetByTitle('" ++ List ++ "')/items",
+            {Site ++ "/_api/web/lists/GetByTitle('" ++ encode_list(List) ++ "')/items",
                 [{"Accept", "application/json; odata=verbose"},
                 {"X-RequestDigest", FormDigest}],
                 ["application/json; odata=verbose"], Body}, Credentials) of
@@ -40,7 +40,7 @@ add_list_item(Site, List, ListItemEntityType, ItemData, FormDigest, Credentials)
 update_list_item(Site, List, ItemId, ListItemEntityType, ItemData, FormDigest, Credentials) ->
     Body = jsx:encode([{'__metadata',[{'type', ListItemEntityType}]} | ItemData]),
     case ntlm_httpc:request(post,
-            {Site ++ "/_api/web/lists/GetByTitle('" ++ List ++ "')/items(" ++ integer_to_list(ItemId) ++ ")",
+            {Site ++ "/_api/web/lists/GetByTitle('" ++ encode_list(List) ++ "')/items(" ++ integer_to_list(ItemId) ++ ")",
                 [{"Accept", "application/json; odata=verbose"},
                 {"X-RequestDigest", FormDigest},
                 {"IF-MATCH", "*"},
@@ -51,6 +51,9 @@ update_list_item(Site, List, ItemId, ListItemEntityType, ItemData, FormDigest, C
         Else ->
             {error, Else}
     end.
+
+encode_list(Value) when is_list(Value) -> edoc_lib:escape_uri(Value);
+encode_list(Value) when is_binary(Value) -> edoc_lib:escape_uri(binary_to_list(Value)).
 
 get_body_attribute(Body, Attribute) ->
     Body2 = jsx:decode(Body, [{labels, atom}]),
