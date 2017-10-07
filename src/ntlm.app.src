@@ -1,6 +1,6 @@
 {application, ntlm,
     [{description, "NT LAN Manager (NTLM) Authentication"},
-    {vsn, "0.0.1"},
+    {vsn, "0.1.0"},
     {modules, []},
     {registered, []},
     {applications, [kernel, stdlib, inets]}]}.
