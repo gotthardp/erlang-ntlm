@@ -1,3 +1,8 @@
+%
+% Copyright (c) 2016-2019 Petr Gotthard <petr.gotthard@centrum.cz>
+% All rights reserved.
+% Distributed under the terms of the MIT License. See the LICENSE file.
+%
 -module(sharepoint).
 -export([get_form_digest/2, get_list_attribute/4, add_list_item/6, update_list_item/7]).
 

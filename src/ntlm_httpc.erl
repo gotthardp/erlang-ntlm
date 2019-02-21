@@ -1,3 +1,8 @@
+%
+% Copyright (c) 2016-2019 Petr Gotthard <petr.gotthard@centrum.cz>
+% All rights reserved.
+% Distributed under the terms of the MIT License. See the LICENSE file.
+%
 -module(ntlm_httpc).
 -export([request/3]).
 

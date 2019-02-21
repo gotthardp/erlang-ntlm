@@ -35,3 +35,10 @@ authentication:
  * Credentials = {workstationstring(), domainstring(), httpc:userstring(), httpc:passwordstring()}
  * Result = {status_line(), headers(), Body}
  * Body = binary()
+
+## Copyright and Licensing
+
+This software is distributed under the terms of the MIT License.
+See the [LICENSE](LICENSE).
+
+Copyright (c) 2016-2019 Petr Gotthard
